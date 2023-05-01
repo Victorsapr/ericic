@@ -1,0 +1,132 @@
+namespace _3laba
+{
+    public partial class Form1 : Form
+    {
+        double precision;
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void buttonPause_Click(object sender, EventArgs e)
+        {
+            if (backgroundWorker1.IsBusy != true) 
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
+        }
+        private void buttonStop_Click(object sender, EventArgs e)
+        {
+            if (backgroundWorker1.WorkerSupportsCancellation == true) 
+            {
+                backgroundWorker1.CancelAsync();
+            }
+        }
+
+        public delegate void del();
+
+        static double pi1;
+        static double pi2;
+        static double pi3;
+
+        private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+        
+            double pi = 0;
+            int n = 0;
+
+            for (int i = 0; i <= 2; i++)
+            {
+               
+                switch (i)
+                {
+                    case 0: // ряд Франсуа Виета
+                        pi = 2;
+                        double a = Math.Sqrt(2);
+                        while (Math.Abs(Math.PI - pi) > precision)
+                        {
+                            pi = pi * a / 2;
+                            a = Math.Sqrt(2 + a);
+                            n++;
+                        }
+                        pi1 = pi;
+                        pi11.Text = Convert.ToString(pi1);
+                        break;
+
+                    case 1: // ряд Джона Валлиса
+                        pi = 2;
+                        double b = 1;
+                        while (Math.Abs(Math.PI - pi) > precision)
+                        {
+                            pi = pi * (b + 1) / b * (b + 2) / (b + 2);
+                            b += 2;
+                            n++;
+                        }
+                        pi2 = pi;
+                        break;
+
+                    case 2: // ряд Готфрида Лейбница
+                        pi = 0;
+                        double c = 1;
+                        while (Math.Abs(Math.PI - pi) > precision)
+                        {
+                            pi += c / (2 * n + 1);
+                            c = -c;
+                            n++;
+                        }
+                        pi *= 4;
+                        pi3 = pi;
+                        break;
+                }
+             
+                
+            } 
+
+
+
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        {
+            loading.Text = e.ProgressPercentage.ToString() + " %";
+            progressBar1.Value = e.ProgressPercentage;
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled == true) 
+            {
+                labelProc.Visible = true;
+                labelProc.Text = "Успешно выполнено";
+                labelProc.ForeColor = Color.Green;
+                pi11.Text = Convert.ToString(pi1);
+                pi22.Text = Convert.ToString(pi2);
+                pi33.Text = Convert.ToString(pi3);
+            }
+            else if (e.Error != null)
+            {
+                labelProc.Visible = true;
+                labelProc.Text = "Ошибка: " + e.Error.Message;
+                labelProc.ForeColor = Color.Red;
+            }
+            else 
+            {
+                labelProc.Visible = true;
+                labelProc.Text = "Остановлено";
+                labelProc.ForeColor = Color.OrangeRed;
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            pi11.Text = pi1.ToString();
+            pi22.Text = pi2.ToString();
+            pi33.Text = pi3.ToString();
+            precision = Convert.ToDouble(textBox1.Text);
+
+        }
+
+
+    }
+}
